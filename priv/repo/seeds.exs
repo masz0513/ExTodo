@@ -15,12 +15,12 @@ alias ExTodo.Todo
 
 [
   %Todo {
-    title: "Learn Ninja",
+    title: "Sample Todo 1",
     completed: false,
     archived: false
   },
   %Todo {
-    title: "Buy Sword",
+    title: "Sample Todo 2",
     completed: false,
     archived: true
   }

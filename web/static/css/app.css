@@ -46,6 +46,15 @@ body {
 .todos-new-util-wrapper {
   border-bottom: none;
   padding: 0;
+  position: relative;
+}
+
+.todos-spinner {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 32px;
+  height: 32px;
 }
 
 .todos-toggle-all {
@@ -73,7 +82,7 @@ body {
 .todos-new {
   border: none;
   font-style: italic;
-  padding: 15px 5px 15px 20px;
+  padding: 15px 40px 15px 20px;
   width: 100%;
 }
 

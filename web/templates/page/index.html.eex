@@ -9,6 +9,7 @@
       <ul class="list-group">
         <li class="list-group-item todos-new-util-wrapper">
           <input type="text" class="todos-new js-new-todo" placeholder="What needs to be done?">
+          <img src="/images/loader.gif" alt="" class="todos-spinner" style="display:none">
         </li>
       </ul>
       <ul class="list-group">

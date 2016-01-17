@@ -24,11 +24,22 @@ class Todo {
   constructor() {
     this.todoListGroup = ".list-group"
     this.displayClientCurrentDate()
+    this.initGlobalAjaxEvent()
     this.toggleTodoEvent()
   }
 
   displayClientCurrentDate() {
     $(".todos-header-date").text((new Date()).toLocaleDateString())
+  }
+
+  initGlobalAjaxEvent() {
+    var $spinner = $(".todos-spinner");
+
+    $(document).ajaxSend(function() {
+      $spinner.show()
+    }).ajaxComplete(function() {
+      $spinner.hide()
+    });
   }
 
   toggleTodoEvent() {
