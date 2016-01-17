@@ -1,0 +1,12 @@
+<ul class="list-group">
+  <li class="list-group-item todos-footer">
+    <div class="row">
+      <div class="col-xs-6 todos-footer-items-left">
+        <small><span class="todos-footer-stat"><%= items_left_count(@todos) %></span> item(s) left</small>
+      </div>
+      <div class="col-xs-6 todos-footer-items-clear">
+        <small class="todos-footer-clear <%= if has_completed?(@todos), do: "", else: "disabled" %>">Clear Completed</small>
+      </div>
+    </div>
+  </li>
+</ul>

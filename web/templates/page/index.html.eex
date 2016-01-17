@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="todos">
+    <header class="clearfix">
+      <h1 class="todos-header-title">Todos</h1>
+      <span class="todos-header-date"></span>
+    </header>
+    <section>
+      <%= render "_utils.html" %>
+      <ul class="list-group">
+        <li class="list-group-item todos-new-util-wrapper">
+          <input type="text" class="todos-new js-new-todo" placeholder="What needs to be done?">
+        </li>
+      </ul>
+      <ul class="list-group">
+        <%= for todo <- @todos do %>
+          <%= render "_todo.html", todo: todo %>
+        <% end %>
+      </ul>
+      <%= render "_footer.html", todos: @todos %>
+    </section>
+    <footer>
+      <small>A simple <a href="www.github.com" alt="Todo App">Todo App</a> built on top of <a href="http://www.phoenixframework.org/" alt="Phoenix Framework">Phoenix Framework.</a> (masz)</small>
+    </footer>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+<li class="list-group-item todos-item" data-id="<%= @todo.id %>">
+  <input type="checkbox" class="todos-item-toggle todos-item-normal-view" <%= if @todo.completed, do: "checked", else: "" %>>
+  <label class="todos-item-label todos-item-normal-view <%= if @todo.completed, do: "completed", else: "" %>" title="Double click to edit"><%= @todo.title %></label>
+  <input type="text" class="todos-item-input todos-item-edit-view hide" value="<%= @todo.title %>">
+  <span class="todos-item-delete todos-item-normal-view">x</span>
+</li>
