@@ -16,6 +16,37 @@
       <%= render @view_module, @view_template, assigns %>
     </div>
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+
+    <script id="todos-template" type="text/x-handlebars-template">
+      {{#each todos}}
+        <li class="list-group-item todos-item" data-id="{{id}}">
+          {{#if completed}}
+            <input type="checkbox" class="todos-item-toggle todos-item-normal-view checked">
+            <label class="todos-item-label todos-item-normal-view completed" title="Double click to edit">{{title}}</label>
+          {{else}}
+            <input type="checkbox" class="todos-item-toggle todos-item-normal-view">
+            <label class="todos-item-label todos-item-normal-view" title="Double click to edit">{{title}}</label>
+          {{/if}}
+          <input type="text" class="todos-item-input todos-item-edit-view hide" value="{{title}}">
+          <span class="todos-item-delete todos-item-normal-view">x</span>
+        </li>
+      {{/each}}      
+    </script>
+
+    <script id="todo-template" type="text/x-handlebars-template">
+      <li class="list-group-item todos-item" data-id="{{id}}">
+        {{#if completed}}
+          <input type="checkbox" class="todos-item-toggle todos-item-normal-view checked">
+          <label class="todos-item-label todos-item-normal-view completed" title="Double click to edit">{{title}}</label>
+        {{else}}
+          <input type="checkbox" class="todos-item-toggle todos-item-normal-view">
+          <label class="todos-item-label todos-item-normal-view" title="Double click to edit">{{title}}</label>
+        {{/if}}
+        <input type="text" class="todos-item-input todos-item-edit-view hide" value="{{title}}">
+        <span class="todos-item-delete todos-item-normal-view">x</span>
+      </li>
+    </script>
   </body>
 </html>

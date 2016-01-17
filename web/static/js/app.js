@@ -23,6 +23,9 @@ import "phoenix_html"
 class Todo {
   constructor() {
     this.todoListGroup = ".list-group"
+    this.todoTemplate = Handlebars.compile($("#todo-template").html())
+    this.todosTemplate = Handlebars.compile($("#todos-template").html())
+
     this.displayClientCurrentDate()
     this.initGlobalAjaxEvent()
     this.toggleTodoEvent()

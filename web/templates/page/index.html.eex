@@ -12,7 +12,7 @@
           <img src="/images/loader.gif" alt="" class="todos-spinner" style="display:none">
         </li>
       </ul>
-      <ul class="list-group">
+      <ul class="list-group todos-container">
         <%= for todo <- @todos do %>
           <%= render "_todo.html", todo: todo %>
         <% end %>
