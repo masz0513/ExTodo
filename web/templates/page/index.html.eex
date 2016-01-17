@@ -20,7 +20,7 @@
       <%= render "_footer.html", todos: @todos %>
     </section>
     <footer>
-      <small>A simple <a href="www.github.com" alt="Todo App">Todo App</a> built on top of <a href="http://www.phoenixframework.org/" alt="Phoenix Framework">Phoenix Framework.</a> (masz)</small>
+      <small>A simple <a href="https://github.com/masz0513/ExTodo" alt="Todo App">Todo App</a> built on top of <a href="http://www.phoenixframework.org/" alt="Phoenix Framework">Phoenix Framework.</a> (masz)</small>
     </footer>
   </div>
 </div>
