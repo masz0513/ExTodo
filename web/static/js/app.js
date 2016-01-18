@@ -23,12 +23,15 @@ import "phoenix_html"
 class Todo {
   constructor() {
     this.todoListGroup = ".list-group"
+    this.$todosContainer = $(".todos-container")
+
     this.todoTemplate = Handlebars.compile($("#todo-template").html())
     this.todosTemplate = Handlebars.compile($("#todos-template").html())
 
     this.displayClientCurrentDate()
     this.initGlobalAjaxEvent()
     this.toggleTodoEvent()
+    this.newTodoEvent()
   }
 
   displayClientCurrentDate() {
@@ -36,7 +39,7 @@ class Todo {
   }
 
   initGlobalAjaxEvent() {
-    var $spinner = $(".todos-spinner");
+    let $spinner = $(".spinner");
 
     $(document).ajaxSend(function() {
       $spinner.show()
@@ -47,18 +50,42 @@ class Todo {
 
   toggleTodoEvent() {
     $(this.todoListGroup).on("click", ".todos-item-toggle", function() {
-      var $this = $(this)
-      var $todoItem = $this.closest(".todos-item");
-      var completed = $this.is(":checked");
+      let $this = $(this)
+      let $todoItem = $this.closest(".todos-item");
+      let completed = $this.is(":checked");
 
       Todo.toggleApi($todoItem.data("id"), completed, function(data) {
         $todoItem.find(".todos-item-label").toggleClass("completed", completed)
-        $(".todos-footer-stat").text(data.itemsLeftCount)
-        $(".todos-footer-clear").toggleClass("disabled", !data.hasCompleted)
+        Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
       }, function(textStatus, errorThrown) {
         Todo.logError("toggleTodoEvent", textStatus, errorThrown)
       })
     });
+  }
+
+  newTodoEvent() {
+    let todoTemplate = this.todoTemplate
+    let $todosContainer = this.$todosContainer
+
+    $(".todos-new").on("keypress", function(e) {
+      let $this = $(this)
+      let title = $this.val()
+
+      if(e.keyCode === 13 && title) {
+        Todo.newTodoApi(title, function(data) {
+          let todo = {
+            id: data.id,
+            title: data.title
+          }
+          
+          $todosContainer.append(todoTemplate(todo))
+          Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
+          $this.val("")
+        }, function(textStatus, errorThrown) {
+          Todo.logError("newTodoEvent", textStatus, errorThrown)
+        })
+      }
+    })    
   }
 
   static logError(title, textStatus, errorThrown) {
@@ -68,6 +95,11 @@ class Todo {
     alert("Unable to process your request. Please try again.")
   }
 
+  static updateStat(itemsLeftCount, hasCompleted) {
+    $(".todos-footer-stat").text(itemsLeftCount)
+    $(".todos-footer-clear").toggleClass("disabled", !hasCompleted)
+  }
+
   // apis
   static toggleApi(id, completed, doneCallback, failCallback) {
     Todo.apiWhen($.ajax({
@@ -75,6 +107,16 @@ class Todo {
       url: "/api/todos/toggle/" + id,
       data: {
         completed: completed
+      }
+    }), doneCallback, failCallback)
+  }
+
+  static newTodoApi(title, doneCallback, failCallback) {
+    Todo.apiWhen($.ajax({
+      type: "POST",
+      url: "/api/todos",
+      data: {
+        title: title
       }
     }), doneCallback, failCallback)
   }

@@ -49,14 +49,6 @@ body {
   position: relative;
 }
 
-.todos-spinner {
-  position: absolute;
-  right: 14px;
-  top: 14px;
-  width: 32px;
-  height: 32px;
-}
-
 .todos-toggle-all {
   border: none;
   background: none;
@@ -214,4 +206,12 @@ footer {
 footer > small {
   color: #8A8A8A;
   font-size: 12px;
+}
+
+.spinner {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 32px;
+  height: 32px;
 }
