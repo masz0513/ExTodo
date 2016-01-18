@@ -64,8 +64,7 @@ class Todo {
   }
 
   newTodoEvent() {
-    let todoTemplate = this.todoTemplate
-    let $todosContainer = this.$todosContainer
+    let $todoClass = this
 
     $(".todos-new").on("keypress", function(e) {
       let $this = $(this)
@@ -78,7 +77,7 @@ class Todo {
             title: data.title
           }
           
-          $todosContainer.append(todoTemplate(todo))
+          $todoClass.$todosContainer.append($todoClass.todoTemplate(todo))
           Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
           $this.val("")
         }, function(textStatus, errorThrown) {
