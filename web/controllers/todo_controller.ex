@@ -22,17 +22,12 @@ defmodule ExTodo.TodoController do
 
   def delete(conn, %{"id" => id}) do
     todo = Repo.get!(Todo, id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
     Repo.delete!(todo)
-
-    send_resp(conn, :no_content, "")
+    render(conn, "stat.json", todos: Todo.get_all_active)
   end
 
   def toggle(conn, %{"id" => id, "completed" => completed}) do
     Todo.toggle(id, completed)
-    todos = Todo.get_all_active
-    render(conn, "stat.json", todos: todos)
+    render(conn, "stat.json", todos: Todo.get_all_active)
   end
 end

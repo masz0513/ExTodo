@@ -30,8 +30,10 @@ class Todo {
 
     this.displayClientCurrentDate()
     this.initGlobalAjaxEvent()
+
     this.toggleTodoEvent()
     this.newTodoEvent()
+    this.deleteTodoEvent()
   }
 
   displayClientCurrentDate() {
@@ -87,6 +89,24 @@ class Todo {
     })    
   }
 
+  deleteTodoEvent() {
+    $(this.todoListGroup).on("click", ".todos-item-delete", function() {
+      if(!confirm("Do you really want to delete this todo?")){
+        return
+      }
+
+      let $this = $(this)
+      let $todoItem = $this.closest(".todos-item");
+
+      Todo.deleteTodoApi($todoItem.data("id"), function(data) {
+        Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
+        $todoItem.remove()
+      }, function(textStatus, errorThrown) {
+        Todo.logError("deleteTodoEvent", textStatus, errorThrown)
+      })
+    })
+  }
+
   static logError(title, textStatus, errorThrown) {
     console.log("-- " + title + " -- ")
     console.log("textStatus: " + textStatus)
@@ -117,6 +137,13 @@ class Todo {
       data: {
         title: title
       }
+    }), doneCallback, failCallback)
+  }
+
+  static deleteTodoApi(id, doneCallback, failCallback) {
+    Todo.apiWhen($.ajax({
+      type: "DELETE",
+      url: "/api/todos/" + id
     }), doneCallback, failCallback)
   }
 
