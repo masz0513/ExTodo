@@ -1,11 +1,11 @@
 <div class="btn-group btn-group-justified todos-utils" role="group" aria-label="...">
   <div class="btn-group" role="group">
-    <button type="button" class="btn btn-sm todos-util-active js-todos-select-all">All</button>
+    <button type="button" class="btn btn-sm todos-util-active todos-select" data-type="all">All</button>
   </div>
   <div class="btn-group" role="group">
-    <button type="button" class="btn btn-sm btn-default todos-select-active js-todos-select-active">Active</button>
+    <button type="button" class="btn btn-sm btn-default todos-select-active todos-select" data-type="active">Active</button>
   </div>
   <div class="btn-group" role="group">
-    <button type="button" class="btn btn-sm btn-default js-todos-select-completed">Completed</button>
+    <button type="button" class="btn btn-sm btn-default todos-select" data-type="completed">Completed</button>
   </div>
 </div>  

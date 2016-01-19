@@ -3,7 +3,7 @@ defmodule ExTodo.TodoController do
 
   alias ExTodo.Todo
 
-  plug :scrub_params, "title" when action in [:create, :update]
+  plug :scrub_params, "title" when action in [:create]
 
   def create(conn, %{"title" => title}) do
     changeset = Todo.changeset(%Todo{}, %{title: title})
@@ -12,7 +12,7 @@ defmodule ExTodo.TodoController do
       {:ok, todo} ->
         conn
         |> put_status(:created)
-        |> render("show.json", id: todo.id, title: todo.title, todos: Todo.get_all_active)
+        |> render("result.json", id: todo.id, title: todo.title, itemsLeftCount: Todo.itemsLeftCount, hasCompleted: Todo.has_completed?)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -21,13 +21,29 @@ defmodule ExTodo.TodoController do
   end
 
   def delete(conn, %{"id" => id}) do
-    todo = Repo.get!(Todo, id)
-    Repo.delete!(todo)
-    render(conn, "stat.json", todos: Todo.get_all_active)
+    Todo.delete!(id)
+    render(conn, "result.json", itemsLeftCount: Todo.itemsLeftCount, hasCompleted: Todo.has_completed?)
   end
 
-  def toggle(conn, %{"id" => id, "completed" => completed}) do
-    Todo.toggle(id, completed)
-    render(conn, "stat.json", todos: Todo.get_all_active)
+  def update(conn, %{"id" => id, "completed" => completed}) do
+    Todo.toggle!(id, completed)
+    render(conn, "result.json", itemsLeftCount: Todo.itemsLeftCount, hasCompleted: Todo.has_completed?)
+  end
+
+  @doc """
+  Delete completed todos and return all active.
+  """
+  def delete(conn, %{"current_filter" => _}) do
+    Todo.delete_completed
+    todos = Todo.get_all(:active)
+    render(conn, "reload_all.json", itemsLeftCount: Enum.count(todos), hasCompleted: false, todos: todos)
+  end
+
+  @doc """
+  Delete completed todos.
+  """
+  def delete(conn, %{"current_filter" => "completed"}) do
+    Todo.delete_completed
+    render(conn, "reload_all.json", itemsLeftCount: Todo.itemsLeftCount, hasCompleted: false)
   end
 end

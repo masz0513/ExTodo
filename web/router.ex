@@ -22,7 +22,7 @@ defmodule ExTodo.Router do
   scope "/api", ExTodo do
     pipe_through :api
 
-    resources "/todos", TodoController, except: [:new, :edit]
-    put "/todos/toggle/:id", TodoController, :toggle
+    resources "/todos", TodoController, except: [:index, :show, :new, :edit]
+    delete "/todos", TodoController, :delete
   end
 end

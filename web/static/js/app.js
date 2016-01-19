@@ -34,6 +34,7 @@ class Todo {
     this.toggleTodoEvent()
     this.newTodoEvent()
     this.deleteTodoEvent()
+    this.deleteCompletedEvent()
   }
 
   displayClientCurrentDate() {
@@ -107,6 +108,24 @@ class Todo {
     })
   }
 
+  deleteCompletedEvent() {
+    let $todoClass = this
+
+    $(this.todoListGroup).on("click", ".todos-footer-clear", function() {
+      if(!confirm("Do you really want to delete all completed todos?")){
+        return
+      }
+
+      var currentFilter = $(".todos-select[class='todos-util-active']").data("type") || "all"
+
+      Todo.deleteCompletedApi(currentFilter.toLowerCase(), function(data) {
+        $todoClass.$todosContainer.html("")
+      }, function(textStatus, errorThrown) {
+        Todo.logError("deleteCompletedEvent", textStatus, errorThrown)
+      })
+    })
+  }
+
   static logError(title, textStatus, errorThrown) {
     console.log("-- " + title + " -- ")
     console.log("textStatus: " + textStatus)
@@ -122,8 +141,8 @@ class Todo {
   // apis
   static toggleApi(id, completed, doneCallback, failCallback) {
     Todo.apiWhen($.ajax({
-      type: "PUT",
-      url: "/api/todos/toggle/" + id,
+      type: "PATCH",
+      url: "/api/todos/" + id,
       data: {
         completed: completed
       }
@@ -144,6 +163,13 @@ class Todo {
     Todo.apiWhen($.ajax({
       type: "DELETE",
       url: "/api/todos/" + id
+    }), doneCallback, failCallback)
+  }
+
+  static deleteCompletedApi(currentFilter, doneCallback, failCallback) {
+    Todo.apiWhen($.ajax({
+      type: "DELETE",
+      url: "/api/todos?current_filter=" + currentFilter
     }), doneCallback, failCallback)
   }
 

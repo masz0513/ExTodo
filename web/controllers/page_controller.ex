@@ -3,7 +3,7 @@ defmodule ExTodo.PageController do
   alias ExTodo.Todo
 
   def index(conn, _params) do
-    todos = Todo.get_all_active
+    todos = Todo.get_all
     render conn, "index.html", todos: todos
   end
 end

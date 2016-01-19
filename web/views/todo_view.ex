@@ -1,24 +1,33 @@
 defmodule ExTodo.TodoView do
   use ExTodo.Web, :view
 
-  def render("show.json", %{id: id, title: title, todos: todos}) do
-    render("stat.json", %{todos: todos})
-    |> Map.put(:id, id)
-    |> Map.put(:title, title)
+  def render("result.json", %{id: id, title: title, itemsLeftCount: itemsLeftCount, hasCompleted: hasCompleted}) do
+    %{id: id, 
+      title: title, 
+      itemsLeftCount: itemsLeftCount, 
+      hasCompleted: hasCompleted}
   end
 
-  def render("stat.json", %{todos: todos}) do
-    %{itemsLeftCount: ExTodo.TodoView.items_left_count(todos),
-      hasCompleted: ExTodo.TodoView.has_completed?(todos)}
+  def render("result.json", %{itemsLeftCount: itemsLeftCount, hasCompleted: hasCompleted}) do
+    %{itemsLeftCount: itemsLeftCount, 
+      hasCompleted: hasCompleted}
   end
 
-  def items_left_count(todos) do
-    todos
-    |> Enum.count(&(not &1.completed))
+  def render("reload_all.json", %{itemsLeftCount: itemsLeftCount, hasCompleted: hasCompleted, todos: todos}) do
+    %{itemsLeftCount: itemsLeftCount, 
+      hasCompleted: hasCompleted,
+      todos: render_many(todos, ExTodo.TodoView, "todo.json")}
   end
 
-  def has_completed?(todos) do
-    todos
-    |> Enum.any?(&(&1.completed))
+  def render("reload_all.json", %{itemsLeftCount: itemsLeftCount, hasCompleted: hasCompleted}) do
+    %{itemsLeftCount: itemsLeftCount, 
+      hasCompleted: hasCompleted,
+      todos: []}
+  end
+
+  def render("todo.json", %{todo: todo}) do
+    %{id: todo.id,
+      title: todo.title,
+      completed: todo.completed}
   end
 end
