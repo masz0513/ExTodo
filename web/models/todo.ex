@@ -71,8 +71,7 @@ defmodule ExTodo.Todo do
 
   def delete_completed do
     query = from t in Todo,
-      where: t.completed,
-      select: t
+      where: t.completed
     Repo.delete_all(query)
   end
 end

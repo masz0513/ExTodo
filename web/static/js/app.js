@@ -112,14 +112,27 @@ class Todo {
     let $todoClass = this
 
     $(this.todoListGroup).on("click", ".todos-footer-clear", function() {
-      if(!confirm("Do you really want to delete all completed todos?")){
+      if($(this).hasClass('disabled') || !confirm("Do you really want to delete all completed todos?")){
         return
       }
 
       var currentFilter = $(".todos-select[class='todos-util-active']").data("type") || "all"
 
       Todo.deleteCompletedApi(currentFilter.toLowerCase(), function(data) {
-        $todoClass.$todosContainer.html("")
+        let todos = []
+
+        $.each(data.todos, function(i, t){
+          todos.push({
+            id: t.id,
+            title: t.title,
+            completed: t.completed
+          })
+        })
+
+        let todosHtml = todos.length > 0 ? $todoClass.todosTemplate({todos}) : ""
+        $todoClass.$todosContainer.html(todosHtml)
+
+        Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
       }, function(textStatus, errorThrown) {
         Todo.logError("deleteCompletedEvent", textStatus, errorThrown)
       })
