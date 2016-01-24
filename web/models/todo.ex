@@ -43,6 +43,14 @@ defmodule ExTodo.Todo do
     Repo.all(query)
   end
 
+  def get_all(:completed) do
+    query = from t in Todo, 
+      where: not t.archived and t.completed,
+      order_by: [asc: t.id],
+      select: t
+    Repo.all(query)
+  end
+
   def itemsLeftCount do
     query = from t in Todo,
       where: not t.archived and not t.completed,
@@ -73,5 +81,10 @@ defmodule ExTodo.Todo do
     query = from t in Todo,
       where: t.completed
     Repo.delete_all(query)
+  end
+
+  def edit!(id, newTitle) do
+    todo = Repo.get!(Todo, id)
+    Repo.update!(Todo.changeset(todo, %{title: newTitle}))
   end
 end

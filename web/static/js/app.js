@@ -35,6 +35,8 @@ class Todo {
     this.newTodoEvent()
     this.deleteTodoEvent()
     this.deleteCompletedEvent()
+    this.editTodoEvent()
+    this.filterTodosEvent()
   }
 
   displayClientCurrentDate() {
@@ -42,7 +44,7 @@ class Todo {
   }
 
   initGlobalAjaxEvent() {
-    let $spinner = $(".spinner");
+    const $spinner = $(".spinner");
 
     $(document).ajaxSend(function() {
       $spinner.show()
@@ -53,11 +55,11 @@ class Todo {
 
   toggleTodoEvent() {
     $(this.todoListGroup).on("click", ".todos-item-toggle", function() {
-      let $this = $(this)
-      let $todoItem = $this.closest(".todos-item");
-      let completed = $this.is(":checked");
+      const $this = $(this)
+      const $todoItem = $this.closest(".todos-item");
+      const completed = $this.is(":checked");
 
-      Todo.toggleApi($todoItem.data("id"), completed, function(data) {
+      Todo.toggleTodoApi($todoItem.data("id"), completed, function(data) {
         $todoItem.find(".todos-item-label").toggleClass("completed", completed)
         Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
       }, function(textStatus, errorThrown) {
@@ -67,15 +69,15 @@ class Todo {
   }
 
   newTodoEvent() {
-    let $todoClass = this
+    const $todoClass = this
 
     $(".todos-new").on("keypress", function(e) {
-      let $this = $(this)
-      let title = $this.val()
+      const $this = $(this)
+      const title = $this.val()
 
       if(e.keyCode === 13 && title) {
         Todo.newTodoApi(title, function(data) {
-          let todo = {
+          const todo = {
             id: data.id,
             title: data.title
           }
@@ -96,8 +98,8 @@ class Todo {
         return
       }
 
-      let $this = $(this)
-      let $todoItem = $this.closest(".todos-item");
+      const $this = $(this)
+      const $todoItem = $this.closest(".todos-item");
 
       Todo.deleteTodoApi($todoItem.data("id"), function(data) {
         Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
@@ -116,7 +118,7 @@ class Todo {
         return
       }
 
-      var currentFilter = $(".todos-select[class='todos-util-active']").data("type") || "all"
+      const currentFilter = $(".todos-select[class='todos-util-active']").data("type") || "all"
 
       Todo.deleteCompletedApi(currentFilter.toLowerCase(), function(data) {
         let todos = []
@@ -129,7 +131,7 @@ class Todo {
           })
         })
 
-        let todosHtml = todos.length > 0 ? $todoClass.todosTemplate({todos}) : ""
+        const todosHtml = todos.length > 0 ? $todoClass.todosTemplate({todos}) : ""
         $todoClass.$todosContainer.html(todosHtml)
 
         Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
@@ -139,6 +141,70 @@ class Todo {
     })
   }
 
+  editTodoEvent() {
+    $(this.todoListGroup).on("dblclick", ".todos-item-label", function() {
+      const $todoItem = $(this).closest(".todos-item");
+
+      $todoItem.find(".todos-item-normal-view").toggleClass("hide")
+      $todoItem.find(".todos-item-edit-view").toggleClass("hide")
+    })
+
+    $(this.todoListGroup).on("keypress", ".todos-item-edit-view", function(e) {
+      if(e.keyCode === 13) {
+        const $this = $(this)
+        const $todoItem = $this.closest(".todos-item");
+        
+        const id = $todoItem.data("id")
+        const newTitle = $this.val()
+
+        Todo.editTodoApi(id, newTitle, function(data) {
+          $todoItem.find(".todos-item-label").text(newTitle)
+          $todoItem.find(".todos-item-normal-view").toggleClass("hide")
+          $todoItem.find(".todos-item-edit-view").toggleClass("hide")
+        }, function(textStatus, errorThrown) {
+          Todo.logError("editTodoEvent", textStatus, errorThrown)
+        })
+      }
+    })
+  }
+
+
+  filterTodosEvent() {
+    let $todoClass = this
+    var $container = $(".todos-utils")
+
+    $container.on("click", ".todos-select", function() {
+      var $this = $(this)
+
+      if($this.hasClass("todos-util-active")){
+        return;
+      }
+
+      Todo.filterTodosApi($this.data("type"), function(data){
+        let todos = []
+
+        $.each(data.todos, function(i, t){
+          todos.push({
+            id: t.id,
+            title: t.title,
+            completed: t.completed
+          })
+        })
+
+        const todosHtml = todos.length > 0 ? $todoClass.todosTemplate({todos}) : ""
+        $todoClass.$todosContainer.html(todosHtml)
+
+        Todo.updateStat(data.itemsLeftCount, data.hasCompleted)
+
+        $container.find(".todos-util-active").removeClass("todos-util-active")
+        $this.addClass("todos-util-active")
+      }, function(textStatus, errorThrown) {
+        Todo.logError("filterTodosEvent", textStatus, errorThrown)
+      })
+    })
+  }
+
+  // --- Utilities --- //
   static logError(title, textStatus, errorThrown) {
     console.log("-- " + title + " -- ")
     console.log("textStatus: " + textStatus)
@@ -152,12 +218,13 @@ class Todo {
   }
 
   // apis
-  static toggleApi(id, completed, doneCallback, failCallback) {
+  static toggleTodoApi(id, completed, doneCallback, failCallback) {
     Todo.apiWhen($.ajax({
       type: "PATCH",
       url: "/api/todos/" + id,
       data: {
-        completed: completed
+        completed: completed,
+        title: "_"
       }
     }), doneCallback, failCallback)
   }
@@ -183,6 +250,23 @@ class Todo {
     Todo.apiWhen($.ajax({
       type: "DELETE",
       url: "/api/todos?current_filter=" + currentFilter
+    }), doneCallback, failCallback)
+  }
+
+  static editTodoApi(id, newTitle, doneCallback, failCallback) {
+    Todo.apiWhen($.ajax({
+      type: "PUT",
+      url: "/api/todos/" + id,
+      data: {
+        title: newTitle
+      }
+    }), doneCallback, failCallback)
+  }
+
+  static filterTodosApi(filter, doneCallback, failCallback) {
+    Todo.apiWhen($.ajax({
+      type: "GET",
+      url: "/api/todos?filter=" + filter
     }), doneCallback, failCallback)
   }
 
